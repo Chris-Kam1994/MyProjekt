@@ -1,4 +1,6 @@
-﻿using listHelper;
+﻿using CommandLine;
+using listHelper;
+using MyProjekt.CommandLineParser;
 using Print;
 using Shell;
 
@@ -6,30 +8,29 @@ namespace MyProjekt;
 
 internal static class MyBuilder
 {
-    public static string masterFile;
-
     private static void Main(string[] args)
     {
-        var separator = Path.PathSeparator;
-
-
-        Console.WriteLine("Please indicate the path of a project");
-        var mainFolderPath = Console.ReadLine();
-
-        Console.WriteLine("Pleace indicate the name of the master(main,index) file");
-        masterFile = Console.ReadLine();
-
-        CreateFolder(mainFolderPath, "BuilderFolder", separator);
-        ProjectFolderSearch(mainFolderPath, mainFolderPath, separator);
-        Con.print(masterFile, ConsoleColor.Blue);
-
-        RunMasterFile();
-        Con.print("########### Build Finish ###########", ConsoleColor.Green);
+        Parser.Default
+            .ParseArguments<StartupOptions>(args)
+            .WithParsed(Foo);
     }
 
     //Traverses the directory, folders and files, and passes all TypeScript(ts) files to the tsToJs function,and copies the folder and file structure.
 
-    private static void ProjectFolderSearch(string projectFolder, string mainFolderPath, char sep)
+
+    private static void Foo(StartupOptions options)
+    {
+        var separator = Path.PathSeparator;
+
+        CreateFolder(options.ProjectDirectory, "BuilderFolder", separator);
+        ProjectFolderSearch(options.ProjectDirectory, options.ProjectDirectory, separator, options.MasterFile);
+        Con.print(options.MasterFile, ConsoleColor.Blue);
+        RunMasterFile(options.MasterFile);
+        Con.print("########### Build Finish ###########", ConsoleColor.Green);
+    }
+
+
+    private static void ProjectFolderSearch(string projectFolder, string mainFolderPath, char sep, string masterFile)
     {
         foreach (var tsNameTs in Directory.GetFiles(projectFolder))
         {
@@ -87,7 +88,7 @@ internal static class MyBuilder
             {
                 Con.print(mainFolderPath, ConsoleColor.Blue);
                 CreateFolder(mainFolderPath, sep + "BuilderFolder", sep);
-                ProjectFolderSearch(tsName, mainFolderPath, sep);
+                ProjectFolderSearch(tsName, mainFolderPath, sep, masterFile);
             }
             else
             {
@@ -98,7 +99,7 @@ internal static class MyBuilder
                     ListHelper.listSelector(folderName, mainpfadSplit.Length, folderName.Length, sep.ToString());
                 Con.print(finalString + sep + finalmainpfadSplit, ConsoleColor.Green);
                 CreateFolder(finalString, finalmainpfadSplit, sep);
-                ProjectFolderSearch(tsName, mainFolderPath, sep);
+                ProjectFolderSearch(tsName, mainFolderPath, sep, masterFile);
             }
         }
     }
@@ -163,7 +164,7 @@ internal static class MyBuilder
     }
 
     //opens the master file
-    private static void RunMasterFile()
+    private static void RunMasterFile(string masterFile)
     {
         if (OperatingSystem.IsLinux())
             Command.Heandler(" open " + masterFile);
