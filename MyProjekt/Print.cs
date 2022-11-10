@@ -3,13 +3,13 @@ using System;
 
 namespace Print
 {
-    class Con
+    static class Console
     {
-        public static void print(string p, ConsoleColor c)
+        public static void WriteLine(string p, ConsoleColor c, params object?[] arguments)
         {
-            Console.ForegroundColor = c;
-            Console.WriteLine(p);
-            Console.ForegroundColor = ConsoleColor.White;
+            System.Console.ForegroundColor = c;
+            System.Console.WriteLine(p, arguments);
+            System.Console.ForegroundColor = ConsoleColor.White;
         }
     }
 

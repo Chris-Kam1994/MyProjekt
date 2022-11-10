@@ -3,6 +3,7 @@ using listHelper;
 using MyProjekt.CommandLineParser;
 using Print;
 using Shell;
+using Console = Print.Console;
 
 namespace MyProjekt;
 
@@ -24,9 +25,9 @@ internal static class MyBuilder
 
         CreateFolder(options.ProjectDirectory, "BuilderFolder", separator);
         ProjectFolderSearch(options.ProjectDirectory, options.ProjectDirectory, separator, options.MasterFile);
-        Con.print(options.MasterFile, ConsoleColor.Blue);
+        Console.WriteLine(options.MasterFile, ConsoleColor.Blue);
         RunMasterFile(options.MasterFile);
-        Con.print("########### Build Finish ###########", ConsoleColor.Green);
+        Console.WriteLine("########### Build Finish ###########", ConsoleColor.Green);
     }
 
 
@@ -52,7 +53,7 @@ internal static class MyBuilder
                     foreach (var tsNameJs in Directory.GetFiles(projectFolder))
                         if (string.Equals(tsNameJs, jsNameFinal, StringComparison.CurrentCultureIgnoreCase))
                         {
-                            Con.print(jsNameFinal, ConsoleColor.Green);
+                            Console.WriteLine("js-file: {0}", ConsoleColor.Green, jsNameFinal);
                             Command.Heandler(OsCommand("move") + " " + jsNameFinal + " " + movePath);
                             goStop = false;
                             break;
@@ -65,7 +66,7 @@ internal static class MyBuilder
                 var movePathSplit = tsNameTs.Split(sep);
                 var movePathElse = mainFolderPath + sep + "BuilderFolder" + sep + ListHelper.listSelector(movePathSplit,
                     directoryNames.Length, movePathSplit.Length, sep.ToString());
-                Console.WriteLine(OsCommand("copy") + " " + tsNameTs + " " + movePathElse);
+                System.Console.WriteLine(OsCommand("copy") + " " + tsNameTs + " " + movePathElse);
                 Command.Heandler(OsCommand("copy") + " " + tsNameTs + " " + movePathElse);
             }
 
@@ -75,7 +76,7 @@ internal static class MyBuilder
             masterFile = mainFolderPath + sep + "BuilderFolder" +
                          ListHelper.listSelector(tsNameTsList, mainFolderPath.Length, tsNameTsList.Length,
                              sep.ToString()) + sep + tsNameTsList[^1];
-            Con.print(masterFile, ConsoleColor.Blue);
+            Console.WriteLine(masterFile, ConsoleColor.Blue);
         }
 
         foreach (var tsName in Directory.GetDirectories(projectFolder))
@@ -86,7 +87,7 @@ internal static class MyBuilder
 
             if (!Directory.Exists(mainFolderPath + sep + "BuilderFolder" + sep))
             {
-                Con.print(mainFolderPath, ConsoleColor.Blue);
+                Console.WriteLine(mainFolderPath, ConsoleColor.Blue);
                 CreateFolder(mainFolderPath, sep + "BuilderFolder", sep);
                 ProjectFolderSearch(tsName, mainFolderPath, sep, masterFile);
             }
@@ -97,7 +98,7 @@ internal static class MyBuilder
                 var finalString = mainFolderPath + sep + "BuilderFolder" + sep;
                 var finalmainpfadSplit =
                     ListHelper.listSelector(folderName, mainpfadSplit.Length, folderName.Length, sep.ToString());
-                Con.print(finalString + sep + finalmainpfadSplit, ConsoleColor.Green);
+                Console.WriteLine(finalString + sep + finalmainpfadSplit, ConsoleColor.Green);
                 CreateFolder(finalString, finalmainpfadSplit, sep);
                 ProjectFolderSearch(tsName, mainFolderPath, sep, masterFile);
             }
@@ -113,9 +114,9 @@ internal static class MyBuilder
     private static void TsToJs(string tsName)
     {
         var command = "tsc " + tsName;
-        Console.WriteLine(command);
+        System.Console.WriteLine(command);
         Command.Heandler(command);
-        Console.WriteLine("Finish");
+        System.Console.WriteLine("Finish");
     }
 
     /// <summary>
@@ -127,7 +128,7 @@ internal static class MyBuilder
     private static void CreateFolder(string folderPath, string name, char sep)
     {
         Directory.CreateDirectory(folderPath + sep + name);
-        Console.WriteLine(name);
+        System.Console.WriteLine(name);
     }
 
 
